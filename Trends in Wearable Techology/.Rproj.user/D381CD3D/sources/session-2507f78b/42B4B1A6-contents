@@ -1,0 +1,103 @@
+---
+title: "Trends in wearable technology"
+author: "Author : Jeremy Leung"
+date: "2023-06-23"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+install.packages("tidyverse")
+install.packages("lubridate")
+install.packages("SimDesign")
+library(tidyverse)
+library(lubridate)
+library(SimDesign)
+setwd("/cloud/project/Raw Data")
+dailyActivity_merged<-read_csv("dailyActivity_merged.csv")
+dailyCalories_merged<-read_csv("dailyCalories_merged.csv")
+Fitbit_data_Weight_Diff<-read_csv("Fitbit_data_Weight_Diff.csv")
+minuteMETsNarrow_merged<-read_csv("minuteMETsNarrow_merged.csv")
+sleepDay_merged<-read_csv("sleepDay_merged.csv")
+
+
+
+```
+
+
+
+## Executive Summary
+To dominate in the female oriented health-focused category, the focus for [bellabeat](https://bellabeat.com) is to have **unbeatable advantage while appeals to board range of customers**  
+
+### Market Climate in 2023:
+
+* The global wearable technology market was valued at USD 61.30 billion in 2022 and is expected to expand at a compound annual growth rate (CAGR) of 14.6% from 2023 to 2030. ([Source: Grandviewresearch](https://www.grandviewresearch.com/industry-analysis/wearable-technology-market))
+* Once a dominant player, Fitbit is now owned by Google in 2021
+
+* Apple’s launch of the Apple Watch Ultra in 2022 marks the tech giant aiming for market share in extreme sports category
+
+* For the time being Garmin, an athlete focused brand begin to incorporate cutting edge technology and displays into its’ product line. 
+
+
+## Trends
+
+Fitbit users typically are active users who are health-conscious and want to keep track of their fitness goals. These users are often individuals who are committed to leading a healthy lifestyle and are looking for ways to stay motivated and accountable. 
+![](Distance_Calories.png)
+![](METS.png)
+
+![](Avg_steps_2017.png) 
+
+
+They are also known for their dedication to physical activity. They are often individuals who prioritize exercise and other physical activities in their daily routines, where their MET scores are among the highest and on average they exercise more than global average indicating where our prospect customer group lies.
+
+### Hypothesis : 
+
+* non-Bellabeat users are purchasing wearable technology for healthier lifestyle
+
+### Data required:
+* Metabolic equivalent of task (MET)
+* Average Steps in comparison to the Global average [(Source : USA Today; Stanford University)](https://www.statista.com/statistics/747380/daily-step-averages-select-countries-worldwide/)
+
+### Analysis next steps:
+* Identify how does non-Bellabeat users plots against general public in health measuring indices
+* The Trend of user long term behaviour 
+
+### Strategic recommendations:
+* Define niche in woman wearable market
+  + conduct large scale survey on our current / upcoming product line to provide first party statistics in order to conceptualise customer orientated strategy  
+* Identify non-direct competition
+  + It’s not common to have more than one watch / wearable accessories, how to tailor our features to target costumers ? 
+  + Compete in new categories / accessible marketing for Bellabeat 
+
+
+### Appendix
+The data are primarily sourced from 2nd party [Fitbit](https://www.kaggle.com/datasets/arashnic/fitbit) ([CC0: Public Domain](https://creativecommons.org/publicdomain/zero/1.0/)) total of 33 eligible Fitbit users includes information about daily activity, steps, and heart rate from 4/12/2016 to 5/12/2016 in the duration of 1 month. Additional comparison are done with reliable open source 3rd party data [USA Today; Stanford University](https://www.statista.com/statistics/747380/daily-step-averages-select-countries-worldwide/).
+
+#### Data are managed, processed and analysised in Spreedsheet and posit Cloud(R).
+The data set fullfills Central Limit Theorem (CLT) of >30 sample size. However ***it's at stakeholder's discretion*** on how these non-current interpolated data from a (ex)major competitor have value in the current wearable market. 
+
+The Tracker error is insignificant:
+```{r Checking bias of Total Distance : Actual Data of the Tracker }
+bias(dailyActivity_merged$TotalDistance, dailyActivity_merged$TrackerDistance)
+```
+Indicating it's tidy data with mulitple merges.
+```{r Checking null of data merging }
+bias(dailyActivity_merged$Calories, dailyCalories_merged$Calories)
+```
+The Code to plot the Distance:Calories graph. `ggplot(data=dailyActivity_merged) +geom_smooth(mapping=aes(x=TrackerDistance,y=Calories), color="purple") +geom_jitter(mapping=aes(x=TrackerDistance,y=Calories, alpha=Id))+labs(titles="Distance:Calories", subtitles="Correlation between Tracking distance and Calories", caption="Diminishing return starting where distance>20")`
+Checking unique Id for outliers / duplicates
+```{r Checking unique Id for outliers / duplicates}
+bias(unique(dailyActivity_merged$Id), unique(dailyCalories_merged$Id))
+bias(unique(dailyActivity_merged$Id),unique(minuteMETsNarrow_merged$Id))
+```
+### Discrepancies in Data
+As participants are not enabling tracking 24/7, there are huge discrepancies in data, for example only 3 Ids have continuous data on weight,where no correlation / conclusion could be drawn for additional marketing statistics.  
+![](Weight_loss.png)
+
+Moreover in sleeping data only 24/33 Ids are logged, where numerous abnormal sleeping behavior(>8 hours) are tracked. Programmers are advised to debug and tackle this error.
+```{r Sleeping data Discrepancies}
+unique(sleepDay_merged$Id)
+ifelse(sleepDay_merged$TotalMinutesAsleep >480,sleepDay_merged$TotalMinutesAsleep -480,
+       'Normal')
+```

@@ -1,0 +1,3 @@
+ifelse(dailyActivity_merged$TotalDistance != dailyActivity_merged$TrackerDistance, dailyActivity_merged$TrackerDistance-dailyActivity_merged$TotalDistance,
+       'None')
+15/940

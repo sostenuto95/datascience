@@ -1,0 +1,9 @@
+
+
+
+unique_iD<-unique(minuteMETsNarrow_merged$Id)
+
+filter(minuteMETsNarrow_merged, Id==1503960366) %>% summarize(mean(METs))
+
+
+filter(minuteMETsNarrow_merged, Id==1503960366) %>% c(minuteMETsNarrow_merged.TotalSteps)
